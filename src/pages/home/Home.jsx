@@ -5,8 +5,29 @@ import Widget from "../../components/widget/Widget";
 import Featured from "../../components/featured/Featured";
 import Chart from "../../components/chart/Chart";
 import Table from "../../components/table/Table";
-
+import { useEffect, useState } from "react";
 const Home = () => {
+
+  const [chartData, setChartData] = useState([])
+
+  const getData = async () => {
+    try {
+      const res = await fetch(
+        'https://sheet.best/api/sheets/6d0266f2-0f51-4836-9481-fff67db5f052'
+      )
+      const data = await res.json()
+      setChartData(data)
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getData()
+
+  }, [])
+
   return (
     <div className="home">
       <Sidebar />
@@ -18,19 +39,18 @@ const Home = () => {
           <Widget type="earning" />
           <Widget type="balance" />
         </div> */}
+
         <div className="charts">
-          {/* <Featured /> */}
-          <Chart title="Impressions" aspect={2 / 1} data={"data1"}/>
+          <Chart websiteName={"dsdad"} data={chartData} />
         </div>
-        <div className="charts">
-          {/* <Featured /> */}
-          <Chart title="Revenue" aspect={2 / 1} data={"data2"}/>
-        </div>
+
+
+
         {/* <div className="listContainer">
           <div className="listTitle">Latest Transactions</div>
           <Table />
         </div> */}
-        
+
       </div>
     </div>
   );

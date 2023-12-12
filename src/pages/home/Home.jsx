@@ -6,33 +6,41 @@ import Featured from "../../components/featured/Featured";
 import Chart from "../../components/chart/Chart";
 import Table from "../../components/table/Table";
 import { useEffect, useState } from "react";
+
 const Home = () => {
 
-  const [chartData, setChartData] = useState([])
+  const [sheetNames, setSheetNames] = useState([]);
 
-  const getData = async () => {
+  const [selectedSheet, setSelectedSheet] = useState([])
+
+
+
+  const sheetID = process.env.REACT_APP_SHEET_ID
+  const key = process.env.REACT_APP_KEY
+  
+  const getName = async () => {
     try {
-      const res = await fetch(
-        'https://sheet.best/api/sheets/6d0266f2-0f51-4836-9481-fff67db5f052'
-      )
-      const data = await res.json()
-      setChartData(data)
-      console.log(data)
+      const endpoint = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}?key=${key}`;
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      const names = data.sheets.map((sheet) => sheet.properties.title);
+      setSheetNames(names);
+      setSelectedSheet(names[0])
     } catch (error) {
       console.log(error)
     }
   }
 
   useEffect(() => {
-    getData()
-
+    getName()
   }, [])
+
 
   return (
     <div className="home">
-      <Sidebar />
+      <Sidebar names={sheetNames} selectedSheet={selectedSheet} setSelectedSheet={setSelectedSheet}/>
       <div className="homeContainer">
-        <Navbar />
+        <br />
         {/* <div className="widgets">
           <Widget type="user" />
           <Widget type="order" />
@@ -40,8 +48,9 @@ const Home = () => {
           <Widget type="balance" />
         </div> */}
 
+        
         <div className="charts">
-          <Chart websiteName={"dsdad"} data={chartData} />
+          <Chart websiteName={selectedSheet} />
         </div>
 
 

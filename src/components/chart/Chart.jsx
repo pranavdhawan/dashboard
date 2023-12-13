@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   AreaChart,
   Area,
@@ -14,8 +16,28 @@ const convertToNumber = (value) => {
   return parseFloat(value.replace(/\$/g, ""));
 };
 
+const formatDate = (date) => {
+  // Format date to DD/MM/YYYY
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+
+
+const parseDateString = (dateString) => {
+  // Parse DD-MM-YYYY format to create a Date object
+  const [day, month, year] = dateString.split("-");
+  return new Date(year, month - 1, day);
+};
+
+
 const Chart = ({ websiteName }) => {
   const [chartData, setChartData] = useState([]);
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const sheetID = "1hcnLmF9O7cHN-XLvzsXjfixO2mZE_nn9FTP7zuKsddY";
   const key = "AIzaSyBew1eFXlK1t8U_-DncRstx_m7lRxMTEFk";
@@ -53,6 +75,45 @@ const Chart = ({ websiteName }) => {
     getData();
   }, [websiteName]);
 
+
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+  
+    // Format the selected start and end dates to DD-MM-YYYY
+    const formattedStartDate = start ? formatDate(start) : null;
+    const formattedEndDate = end ? formatDate(end) : null;
+  
+    setStartDate(start);
+    setEndDate(end);
+  
+    // Check if both start and end are null, then reset the states
+    if (start === null && end === null) {
+      setStartDate(null);
+      setEndDate(null);
+  
+      // Fetch all data when the date range is cleared
+      getData();
+      return;
+    }
+  
+    // Filter data based on the selected date range
+    const filteredData = chartData.filter((entry) => {
+      const formattedEntryDate = entry.Date; // Assuming entry.Date is already in DD-MM-YYYY format
+  
+      return (
+        (!start || formattedEntryDate >= formattedStartDate) &&
+        (!end || formattedEntryDate <= formattedEndDate)
+      );
+    });
+  
+    // Update the chart data with the filtered data
+    setChartData(filteredData);
+  };
+  
+  
+  
+
+
   const renderCharts = () => {
     if (chartData.length === 0) {
       return <div>No data available</div>;
@@ -61,54 +122,81 @@ const Chart = ({ websiteName }) => {
     const chartElements = Object.keys(chartData[0])
       .filter((key) => key !== "Date" && key !== "Website")
       .map((key) => {
-        // Extract values for domain calculation
+        const displayName = key // Add more mappings as needed
+
         const values = chartData.map((entry) => entry[key]);
 
-        // Calculate the domain with some padding
         const minValue = Math.min(...values);
         const maxValue = Math.max(...values);
-        const padding = 0.1 * (maxValue - minValue); // 10% padding
-        const domain = [minValue - padding, maxValue + padding];
+        const domain = [minValue, maxValue];
+
+        let total = values.reduce((acc, value) => acc + value, 0)
+
+        // if (key === "Revenue") {
+        //   total = total.toFixed(2);
+        // }
+
+        const totalFormatted = key === "Revenue" ? `$${total.toFixed(2)}` : total.toLocaleString();
+
 
         return (
-          <ResponsiveContainer key={key} width="100%" aspect={2 / 1}>
-            <AreaChart
-              width={730}
-              height={250}
-              data={chartData}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
-              <defs>
-                <linearGradient id={`${key}-gradient`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="Date" stroke="gray" />
-              <YAxis type="number" stroke="gray" domain={domain} />
-              <CartesianGrid strokeDasharray="3 3" className="chartGrid" />
-              <Tooltip />
-              <Area
-                type="monotone"
-                dataKey={key}
-                stroke="#8884d8"
-                fillOpacity={1}
-                fill={`url(#${key}-gradient)`}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div key={key} className="chart-container">
+            <ResponsiveContainer width="100%" aspect={2 / 1}>
+              <AreaChart
+                width={730}
+                height={250}
+                data={chartData}
+                margin={{ top: 30, right: 30, left: 50, bottom: 20 }}
+              >
+                <defs>
+                  <linearGradient id={`${key}-gradient`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="Date" stroke="gray" />
+                <YAxis
+                  type="number"
+                  stroke="gray"
+                  domain={domain}
+                  tickFormatter={(value) => (key === "Revenue" ? `$${value}` : value)}
+                />
+                <CartesianGrid strokeDasharray="3 3" className="chartGrid" />
+                <Tooltip />
+                <Area
+                  type="monotone"
+                  dataKey={key}
+                  stroke="#8884d8"
+                  fillOpacity={1}
+                  fill={`url(#${key}-gradient)`}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+            <div className="total-value">Total {displayName}: {totalFormatted}</div>
+          </div>
         );
       });
 
-    return chartElements;
+    return <div className="charts-container">{chartElements}</div>;
   };
 
   return (
     <div className="chart">
+      <div className="date-picker">
+        <DatePicker
+          selectsRange
+          startDate={startDate}
+          endDate={endDate}
+          onChange={handleDateChange}
+          isClearable
+          dateFormat="dd-MM-yyyy"
+        />
+      </div>
       <div className="title">{websiteName}</div>
       {renderCharts()}
     </div>
   );
+
 };
 
 export default Chart;

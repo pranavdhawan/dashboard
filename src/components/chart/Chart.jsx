@@ -16,33 +16,13 @@ const convertToNumber = (value) => {
   return parseFloat(value.replace(/\$/g, ""));
 };
 
-const formatDate = (date) => {
-  // Format date to DD/MM/YYYY
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-
-
-
-const parseDateString = (dateString) => {
-  // Parse DD-MM-YYYY format to create a Date object
-  const [day, month, year] = dateString.split("-");
-  return new Date(year, month - 1, day);
-};
-
-
 const Chart = ({ websiteName }) => {
   const [chartData, setChartData] = useState([]);
-
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
   const sheetID = process.env.REACT_APP_SHEET_ID;
   const key = process.env.REACT_APP_KEY;
-
 
   const getData = async () => {
     try {
@@ -77,75 +57,42 @@ const Chart = ({ websiteName }) => {
     getData();
   }, [websiteName]);
 
-
-
-
-  
-
   const handleDateChange = (dates) => {
     const [start, end] = dates;
-  
-    // Format the selected start and end dates to DD/MM/YYYY
-    const formattedStartDate = start ? formatDate(start) : null;
-    const formattedEndDate = end ? formatDate(end) : null;
-  
     setStartDate(start);
     setEndDate(end);
-  
-    // Check if both start and end are null, then reset the states
-    if (start === null && end === null) {
-      setStartDate(null);
-      setEndDate(null);
-  
-      // Fetch all data when the date range is cleared
-      getData();
-      return;
-    }
-  
-    // Filter data based on the selected date range
-    const filteredData = chartData.filter((entry) => {
-      const formattedEntryDate = entry.Date; // Assuming entry.Date is already in DD/MM/YYYY format
-  
-      return (
-        (!start || formattedEntryDate >= formattedStartDate) &&
-        (!end || formattedEntryDate <= formattedEndDate)
-      );
-    });
-  
-    // Update the chart data with the filtered data
-    setChartData(filteredData);
   };
-  
-  
-  
-  
-  
-
 
   const renderCharts = () => {
     if (chartData.length === 0) {
       return <div>No data available</div>;
     }
 
-    const chartElements = Object.keys(chartData[0])
+    const filteredData = chartData.filter((item) => {
+      const formattedDate = item.Date; // Use the correct key for the date column
+      const startDateMatch =
+        !startDate || new Date(formattedDate.split('/').reverse().join('/')) >= startDate;
+      const endDateMatch =
+        !endDate || new Date(formattedDate.split('/').reverse().join('/')) <= endDate;
+
+      return startDateMatch && endDateMatch;
+    });
+
+    const chartElements = Object.keys(filteredData[0])
       .filter((key) => key !== "Date" && key !== "Website")
       .map((key) => {
-        const displayName = key // Add more mappings as needed
+        const displayName = key; // Add more mappings as needed
 
-        const values = chartData.map((entry) => entry[key]);
+        const values = filteredData.map((entry) => entry[key]);
 
         const minValue = Math.min(...values);
         const maxValue = Math.max(...values);
         const domain = [minValue, maxValue];
 
-        let total = values.reduce((acc, value) => acc + value, 0)
+        let total = values.reduce((acc, value) => acc + value, 0);
 
-        // if (key === "Revenue") {
-        //   total = total.toFixed(2);
-        // }
-
-        const totalFormatted = key === "Revenue" ? `$${total.toFixed(2)}` : total.toLocaleString();
-
+        const totalFormatted =
+          key === "Revenue" ? `$${total.toFixed(2)}` : total.toLocaleString();
 
         return (
           <div key={key} className="chart-container">
@@ -153,7 +100,7 @@ const Chart = ({ websiteName }) => {
               <AreaChart
                 width={730}
                 height={250}
-                data={chartData}
+                data={filteredData}
                 margin={{ top: 30, right: 30, left: 50, bottom: 20 }}
               >
                 <defs>
@@ -180,7 +127,9 @@ const Chart = ({ websiteName }) => {
                 />
               </AreaChart>
             </ResponsiveContainer>
-            <div className="total-value">Total {displayName}: {totalFormatted}</div>
+            <div className="total-value">
+              Total {displayName}: {totalFormatted}
+            </div>
           </div>
         );
       });
@@ -190,6 +139,7 @@ const Chart = ({ websiteName }) => {
 
   return (
     <div className="chart">
+      <div className="title">{websiteName}</div>
       <div className="date-picker">
         <DatePicker
           selectsRange
@@ -197,14 +147,12 @@ const Chart = ({ websiteName }) => {
           endDate={endDate}
           onChange={handleDateChange}
           isClearable
-          dateFormat="dd-MM-yyyy"
+          dateFormat="dd/MM/yyyy"
         />
       </div>
-      <div className="title">{websiteName}</div>
       {renderCharts()}
     </div>
   );
-
 };
 
 export default Chart;

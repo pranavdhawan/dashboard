@@ -4,19 +4,18 @@ import "./home.scss";
 import Widget from "../../components/widget/Widget";
 import Featured from "../../components/featured/Featured";
 import Chart from "../../components/chart/Chart";
-import Table from "../../components/table/Table";
 import { useEffect, useState } from "react";
+import Table from "../../components/table/Table"
 
 const Home = () => {
 
   const [sheetNames, setSheetNames] = useState([]);
+  const [selectedSheet, setSelectedSheet] = useState([]);
+  const [view, setView] = useState("chart"); // Default view is chart
 
-  const [selectedSheet, setSelectedSheet] = useState([])
+  const sheetID = process.env.REACT_APP_SHEET_ID;
+  const key = process.env.REACT_APP_KEY;
 
-
-
-  const sheetID = process.env.REACT_APP_SHEET_ID
-  const key = process.env.REACT_APP_KEY
   
   const getName = async () => {
     try {
@@ -36,30 +35,29 @@ const Home = () => {
   }, [])
 
 
+
+  const handleViewChange = (newView) => {
+    setView(newView);
+  };
+
   return (
     <div className="home">
-      <Sidebar names={sheetNames} selectedSheet={selectedSheet} setSelectedSheet={setSelectedSheet}/>
+      <Sidebar names={sheetNames} selectedSheet={selectedSheet} setSelectedSheet={setSelectedSheet} />
       <div className="homeContainer">
         <br />
-        {/* <div className="widgets">
-          <Widget type="user" />
-          <Widget type="order" />
-          <Widget type="earning" />
-          <Widget type="balance" />
-        </div> */}
-
-        
-        <div className="charts">
-          <Chart websiteName={selectedSheet} />
+        <div className="viewToggle">
+          <button onClick={() => handleViewChange("chart")} disabled={view === "chart"}>
+            Chart View
+          </button>
+          <button onClick={() => handleViewChange("table")} disabled={view === "table"}>
+            Table View
+          </button>
         </div>
 
-
-
-        {/* <div className="listContainer">
-          <div className="listTitle">Latest Transactions</div>
-          <Table />
-        </div> */}
-
+        <div className="views">
+          {view === "chart" && <Chart websiteName={selectedSheet} />}
+          {view === "table" && <Table websiteName={selectedSheet} />}
+        </div>
       </div>
     </div>
   );

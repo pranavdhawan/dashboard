@@ -39,8 +39,9 @@ const Chart = ({ websiteName }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  const sheetID = "1hcnLmF9O7cHN-XLvzsXjfixO2mZE_nn9FTP7zuKsddY";
-  const key = "AIzaSyBew1eFXlK1t8U_-DncRstx_m7lRxMTEFk";
+  const sheetID = process.env.REACT_APP_SHEET_ID;
+  const key = process.env.REACT_APP_KEY;
+
 
   const getData = async () => {
     try {
@@ -80,8 +81,8 @@ const Chart = ({ websiteName }) => {
     const [start, end] = dates;
   
     // Format the selected start and end dates to DD-MM-YYYY
-    const formattedStartDate = start ? formatDate(start) : null;
-    const formattedEndDate = end ? formatDate(end) : null;
+    const formattedStartDate = start ? start.toLocaleDateString("en-GB") : null;
+    const formattedEndDate = end ? end.toLocaleDateString("en-GB") : null;
   
     setStartDate(start);
     setEndDate(end);
@@ -98,7 +99,7 @@ const Chart = ({ websiteName }) => {
   
     // Filter data based on the selected date range
     const filteredData = chartData.filter((entry) => {
-      const formattedEntryDate = entry.Date; // Assuming entry.Date is already in DD-MM-YYYY format
+      const formattedEntryDate = entry.Date; // Assuming entry.Date is already in DD/MM/YYYY format
   
       return (
         (!start || formattedEntryDate >= formattedStartDate) &&
@@ -109,6 +110,7 @@ const Chart = ({ websiteName }) => {
     // Update the chart data with the filtered data
     setChartData(filteredData);
   };
+  
   
   
   

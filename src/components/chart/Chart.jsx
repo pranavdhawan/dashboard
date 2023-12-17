@@ -26,6 +26,7 @@ const formatDate = (date) => {
 
 
 
+
 const parseDateString = (dateString) => {
   // Parse DD-MM-YYYY format to create a Date object
   const [day, month, year] = dateString.split("-");
@@ -77,12 +78,16 @@ const Chart = ({ websiteName }) => {
   }, [websiteName]);
 
 
+
+
+  
+
   const handleDateChange = (dates) => {
     const [start, end] = dates;
   
-    // Format the selected start and end dates to DD-MM-YYYY
-    const formattedStartDate = start ? start.toLocaleDateString("en-GB") : null;
-    const formattedEndDate = end ? end.toLocaleDateString("en-GB") : null;
+    // Format the selected start and end dates to DD/MM/YYYY
+    const formattedStartDate = start ? formatDate(start) : null;
+    const formattedEndDate = end ? formatDate(end) : null;
   
     setStartDate(start);
     setEndDate(end);
@@ -110,6 +115,7 @@ const Chart = ({ websiteName }) => {
     // Update the chart data with the filtered data
     setChartData(filteredData);
   };
+  
   
   
   

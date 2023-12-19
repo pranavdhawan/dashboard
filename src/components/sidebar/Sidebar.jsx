@@ -11,14 +11,25 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSystemDaydreamOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { Link, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, useNavigate} from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
 import { useState, useEffect } from "react";
 import Chart from "../chart/Chart";
-
+import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = ({ names, selectedSheet, setSelectedSheet }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+
+    // Redirect or perform any other post-logout actions
+  };
+
+
   const { dispatch } = useContext(DarkModeContext);
 
   return (
@@ -42,9 +53,9 @@ const Sidebar = ({ names, selectedSheet, setSelectedSheet }) => {
           <p className="title">USER</p>
           <li>
             <AccountCircleOutlinedIcon className="icon" />
-            <span>Profile</span>
+            <span>{user && user.email}</span>
           </li>
-          <li>
+          <li onClick={handleLogout}>
             <ExitToAppIcon className="icon" />
             <span>Logout</span>
           </li>

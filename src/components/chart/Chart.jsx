@@ -13,7 +13,8 @@ import {
 import "./chart.scss";
 
 const convertToNumber = (value) => {
-  return parseFloat(value.replace(/\$/g, ""));
+  return parseFloat(value.replace(/[$,]/g, ""));
+
 };
 
 const Chart = ({ websiteName }) => {

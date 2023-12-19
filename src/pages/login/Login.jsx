@@ -28,12 +28,14 @@ const Login = () => {
             if(res.data.isAdmin) {
               dispatch({type: "LOGIN_SUCCESS", payload: res.data.details})
               navigate("/")
+              console.log('loggedin')
             } else {
               dispatch({type: "LOGIN_FAILURE", payload: {message: "You are not allowed."}})
             }
             
         } catch (err) {
             dispatch({type: "LOGIN_FAILURE", payload: err.response.data})
+            console.log('nop')
         }
     }
 

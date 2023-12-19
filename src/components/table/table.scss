@@ -1,10 +1,16 @@
-.tableContainer {
-  flex: 4;
-  padding: 10px;
-  color: gray;
+// table.scss
 
-  box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-  -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+.tableContainer {
+  margin-top: 20px;
+
+  .date-picker {
+    margin-bottom: 20px;
+    text-align: center;
+
+    .react-datepicker-wrapper {
+      display: inline-block;
+    }
+  }
 
   table {
     width: 100%;
@@ -12,7 +18,7 @@
     margin-bottom: 20px;
 
     th, td {
-      border: 1px solid gray;
+      border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
     }
@@ -20,13 +26,27 @@
     th {
       background-color: #f2f2f2;
     }
+  }
 
-    tbody tr:nth-child(even) {
-      background-color: #f9f9f9;
+  .total-boxes {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+
+  .total-box {
+    text-align: center;
+    flex: 1;
+    padding: 10px;
+
+    .total-label {
+      font-weight: bold;
+      margin-bottom: 5px;
     }
 
-    tbody tr:hover {
-      background-color: #e0e0e0;
+    .total-value {
+      font-size: 18px;
     }
   }
 }

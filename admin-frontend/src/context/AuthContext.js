@@ -8,7 +8,7 @@ function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:1337/api/login', {
+      const response = await fetch('https://apnabackend.onrender.com/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

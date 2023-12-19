@@ -15,7 +15,7 @@ const Home = () => {
   useEffect(() => {
     const fetchSheetId = async () => {
       try {
-        const response = await fetch(`http://localhost:1337/api/getSheetIdByEmail/${user}`);
+        const response = await fetch(`https://apnabackend.onrender.com/api/getSheetIdByEmail/${user}`);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch sheetId. Status: ${response.status}`);

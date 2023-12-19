@@ -6,18 +6,17 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 const Home = () => {
-
   const { user } = useAuth();
   const [sheetId, setSheetId] = useState(null);
   const [sheetNames, setSheetNames] = useState([]);
   const [selectedSheet, setSelectedSheet] = useState([]);
   const [view, setView] = useState("chart");
+  console.log(user);
 
-  console.log(user)
   useEffect(() => {
     const fetchSheetId = async () => {
       try {
-        const response = await fetch(`http://localhost:1337/api/getSheetIdByEmail/${user.email}`);
+        const response = await fetch(`http://localhost:1337/api/getSheetIdByEmail/${user}`);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch sheetId. Status: ${response.status}`);
@@ -30,9 +29,7 @@ const Home = () => {
       }
     };
   
-    // Check if user is not null before calling fetchSheetId
     if (user) {
-      console.log(user.email);
       fetchSheetId();
     }
   }, [user]);
@@ -44,9 +41,6 @@ const Home = () => {
         if (!sheetId) {
           return; // Wait until sheetId is available
         }
-
-        console.log(sheetId)
-        console.log('s')
 
         const key = process.env.REACT_APP_KEY;
         const endpoint = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?key=${key}`;

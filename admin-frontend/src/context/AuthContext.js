@@ -24,7 +24,8 @@ function AuthProvider({ children }) {
         localStorage.setItem('token', data.user);
         alert('Login successful');
         setUser(email);
-        window.location.href = '/';
+      } else {
+        alert('Please check your username and password');
       }
     } catch (error) {
       alert('Please check your username and password');

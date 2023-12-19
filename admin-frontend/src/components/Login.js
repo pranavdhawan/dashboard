@@ -1,8 +1,9 @@
 import { useState } from 'react'
-
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'
 
 function App() {
+	const navigate = useNavigate();
     const { login } = useAuth();
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
@@ -11,6 +12,7 @@ function App() {
 	async function loginUser(event) {
 		event.preventDefault();
 		await login(email, password);
+		navigate('/');
 	}
 
 	return (

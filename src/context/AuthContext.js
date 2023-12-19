@@ -6,10 +6,29 @@ function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
   const login = async (email, password) => {
-    // Perform your login logic here
-    // Set the user in state if login is successful
-    setUser({ email });
+    try {
+      const response = await fetch('http://localhost:1337/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
     
+      const data = await response.json();
+
+      if (data.user) {
+        localStorage.setItem('token', data.user);
+        alert('Login successful');
+        setUser(email);
+        window.location.href = '/';
+      }
+    } catch (error) {
+      alert('Please check your username and password');
+    }
   };
 
   const logout = async () => {

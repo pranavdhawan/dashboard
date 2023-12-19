@@ -9,9 +9,9 @@ function App() {
   const { user } = useAuth();
 
   // Check if user is not authenticated, then redirect to login page
-  if (!user && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
-    return <Navigate to="/login" />;
-  }
+  // if (!user && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+  //   return <Navigate to="/login" />;
+  // }
 
   return (
     <AuthProvider>

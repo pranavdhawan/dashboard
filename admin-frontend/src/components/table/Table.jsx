@@ -3,13 +3,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./table.scss";
 
-const Table = ({ websiteName }) => {
+const Table = ({ sheetID, websiteName }) => {
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  const sheetID = process.env.REACT_APP_SHEET_ID;
+  // const sheetID = process.env.REACT_APP_SHEET_ID;
   const key = process.env.REACT_APP_KEY;
 
   useEffect(() => {

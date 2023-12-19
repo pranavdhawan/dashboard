@@ -4,52 +4,66 @@ import "./home.scss";
 import Chart from "../../components/chart/Chart";
 import Table from "../../components/table/Table";
 import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+import { api } from "../../lip/fetch-config";
+import useSheetId from "../../hooks/sheetidhook";
 
 const Home = () => {
-  const { user } = useAuth();
-  const [sheetId, setSheetId] = useState(null);
+  const { user} = useAuth();
+  const {sheetId: sheetID} = useSheetId()
+
+  // const [sheetId, setSheetId] = useState(null);
+  
   const [sheetNames, setSheetNames] = useState([]);
   const [selectedSheet, setSelectedSheet] = useState([]);
   const [view, setView] = useState("chart");
 
-  useEffect(() => {
-    const fetchSheetId = async () => {
-      try {
-        const response = await fetch(`https://apnabackend.onrender.com/api/getSheetIdByEmail/${user}`);
+  console.log(sheetID)
+  // useEffect(() => {
+  //   // const fetchSheetId = async () => {
+  //   //   try {
+  //   //     const response = await fetch(`https://apnabackend.onrender.com/api/getSheetIdByEmail/${user}`);
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch sheetId. Status: ${response.status}`);
-        }
+  //   //     if (!response.ok) {
+  //   //       throw new Error(`Failed to fetch sheetId. Status: ${response.status}`);
+  //   //     }
 
-        const data = await response.json();
-        setSheetId(data.sheetId);
+  //   //     const data = await response.json();
+  //   //     setSheetId(data.sheetId);
 
-        // Store the sheetId in localStorage
-        localStorage.setItem("sheetId", data.sheetId);
-      } catch (error) {
-        console.error('Error fetching sheetId:', error.message);
-      }
-    };
+  //   //     // Store the sheetId in localStorage
+  //   //     localStorage.setItem("sheetId", data.sheetId);
+  //   //   } catch (error) {
+  //   //     console.error('Error fetching sheetId:', error.message);
+  //   //   }
+  //   // };
 
-    // Try to get sheetId from localStorage on component mount
-    const storedSheetId = localStorage.getItem("sheetId");
-    if (storedSheetId) {
-      setSheetId(storedSheetId);
-    } else {
-      // Fetch sheetId if not found in localStorage
-      fetchSheetId();
-    }
-  }, [user]);
+  //   // Try to get sheetId from localStorage on component mount
+  //   const storedSheetId = sheetID
+
+  //     console.log(sheetID)
+  //   // } else {
+  //   //   // Fetch sheetId if not found in localStorage
+  //   //   fetchSheetId();
+  //   // }
+  // }, [user]);
 
   useEffect(() => {
     const getName = async () => {
       try {
-        if (!sheetId) {
+
+        if(!user) {
+          console.log('haha')
+        } else {
+          console.log(user)
+        }
+
+        if (!sheetID) {
           return; // Wait until sheetId is available
         }
 
         const key = process.env.REACT_APP_KEY;
-        const endpoint = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?key=${key}`;
+        const endpoint = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}?key=${key}`;
         const response = await fetch(endpoint);
 
         if (!response.ok) {
@@ -83,7 +97,8 @@ const Home = () => {
       // Fetch sheetNames if not found in localStorage
       getName();
     }
-  }, [sheetId]);
+    getName(sheetID)
+  }, []);
 
   const handleViewChange = (newView) => {
     setView(newView);
@@ -104,8 +119,8 @@ const Home = () => {
         </div>
 
         <div className="views">
-          {view === "chart" && <Chart websiteName={selectedSheet} />}
-          {view === "table" && <Table websiteName={selectedSheet} />}
+          {view === "chart" && <Chart sheetID={sheetID} websiteName={selectedSheet} />}
+          {view === "table" && <Table sheetID={sheetID} websiteName={selectedSheet} />}
         </div>
       </div>
     </div>

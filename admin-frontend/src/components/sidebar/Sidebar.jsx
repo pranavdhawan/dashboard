@@ -19,10 +19,11 @@ import Chart from "../chart/Chart";
 import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = ({ names, selectedSheet, setSelectedSheet }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, email} = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    localStorage.clear();
     logout();
     navigate('/login');
 
@@ -53,7 +54,7 @@ const Sidebar = ({ names, selectedSheet, setSelectedSheet }) => {
           <p className="title">USER</p>
           <li>
             <AccountCircleOutlinedIcon className="icon" />
-            <span>{user && user.email}</span>
+            <span>{email.email}</span>
           </li>
           <li onClick={handleLogout}>
             <ExitToAppIcon className="icon" />

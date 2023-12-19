@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/sidebar/Sidebar";
 import "./home.scss";
 import Chart from "../../components/chart/Chart";
 import Table from "../../components/table/Table";
-import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 const Home = () => {
@@ -11,29 +11,35 @@ const Home = () => {
   const [sheetNames, setSheetNames] = useState([]);
   const [selectedSheet, setSelectedSheet] = useState([]);
   const [view, setView] = useState("chart");
-  console.log(user);
 
   useEffect(() => {
     const fetchSheetId = async () => {
       try {
         const response = await fetch(`http://localhost:1337/api/getSheetIdByEmail/${user}`);
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch sheetId. Status: ${response.status}`);
         }
-  
+
         const data = await response.json();
         setSheetId(data.sheetId);
+
+        // Store the sheetId in localStorage
+        localStorage.setItem("sheetId", data.sheetId);
       } catch (error) {
         console.error('Error fetching sheetId:', error.message);
       }
     };
-  
-    if (user) {
+
+    // Try to get sheetId from localStorage on component mount
+    const storedSheetId = localStorage.getItem("sheetId");
+    if (storedSheetId) {
+      setSheetId(storedSheetId);
+    } else {
+      // Fetch sheetId if not found in localStorage
       fetchSheetId();
     }
   }, [user]);
-  
 
   useEffect(() => {
     const getName = async () => {
@@ -58,13 +64,25 @@ const Home = () => {
 
         const names = data.sheets.map((sheet) => sheet.properties.title);
         setSheetNames(names);
+
+        // Store the names array in localStorage
+        localStorage.setItem("sheetNames", JSON.stringify(names));
+
         setSelectedSheet(names[0]);
       } catch (error) {
         console.error("Error fetching sheet names:", error.message);
       }
     };
 
-    getName();
+    // Try to get sheetNames from localStorage on component mount
+    const storedSheetNames = localStorage.getItem("sheetNames");
+    if (storedSheetNames) {
+      setSheetNames(JSON.parse(storedSheetNames));
+      setSelectedSheet(JSON.parse(storedSheetNames)[0]);
+    } else {
+      // Fetch sheetNames if not found in localStorage
+      getName();
+    }
   }, [sheetId]);
 
   const handleViewChange = (newView) => {

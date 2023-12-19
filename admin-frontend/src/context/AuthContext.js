@@ -4,6 +4,7 @@ const AuthContext = createContext();
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [email, setEmail] = useState(null)
 
   const login = async (email, password) => {
     try {
@@ -24,6 +25,7 @@ function AuthProvider({ children }) {
         localStorage.setItem('token', data.user);
         alert('Login successful');
         setUser(email);
+        setEmail({email})
       } else {
         alert('Please check your username and password');
       }
@@ -36,10 +38,11 @@ function AuthProvider({ children }) {
     // Perform your logout logic here
     // Set the user to null in state
     setUser(null);
+    setEmail(null)
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, email}}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,0 +1,52 @@
+// table.scss
+
+.tableContainer {
+  margin-top: 20px;
+
+  .date-picker {
+    margin-bottom: 20px;
+    text-align: center;
+
+    .react-datepicker-wrapper {
+      display: inline-block;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  }
+
+  .total-boxes {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+
+  .total-box {
+    text-align: center;
+    flex: 1;
+    padding: 10px;
+
+    .total-label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .total-value {
+      font-size: 18px;
+    }
+  }
+}

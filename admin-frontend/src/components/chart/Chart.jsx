@@ -13,15 +13,16 @@ import {
 import "./chart.scss";
 
 const convertToNumber = (value) => {
-  return parseFloat(value.replace(/\$/g, ""));
+  return parseFloat(value.replace(/[$,]/g, ""));
+
 };
 
-const Chart = ({ websiteName }) => {
+const Chart = ({ sheetID, websiteName }) => {
   const [chartData, setChartData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  const sheetID = process.env.REACT_APP_SHEET_ID;
+  // const sheetID = process.env.REACT_APP_SHEET_ID;
   const key = process.env.REACT_APP_KEY;
 
   const getData = async () => {

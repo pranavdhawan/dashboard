@@ -12,6 +12,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: '.env' });
 
 const express = require('express')
+const axios = require('axios');
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
@@ -92,6 +93,21 @@ app.get('/api/getSheetIdByEmail/:email', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+  app.get('/api/sheets-data', async (req, res) => {
+    try {
+      const sheetID = req.query.sheetID; // Pass the sheetID from frontend
+      // const key = process.env.VITE_CLIENT_KEY;
+      const key = req.query.key;
+  
+      const response = await axios.get(`https://sheets.googleapis.com/v4/spreadsheets/${sheetID}?key=${key}`);
+      res.json(response.data);
+    } catch (error) {
+      console.error('Error fetching sheets data:', error.message);
+      res.status(500).send('Server error');
+    }
+  });
+  
 
 
 app.post('/api/login', async (req, res) => {
